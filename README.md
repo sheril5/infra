@@ -1,27 +1,74 @@
 # Tekton Flow For Capten
-## Configuring Tekton
+## Tekton CI/CD Pipeline
 1. Login to the capten ui page by clicking on this link https://alpha.intelops.app/login
-2. Go to the onboarding ,select the `add git repo` from the **git** section and add the git repo url,access token and label for the customer repo (label is tekton) and the tekton ci/cd repo (label is IntelopsCi)
-3. Then,select `add container registry` from **container registry** section and add  the registry url,username,access token and label to which the built image needs to be pushed (labels is "tekton")
-4. Go to the *capten-->platform engineering* ,select on the tekton setup and then select the `sync` option under the  **configure** section and this will configure the tekton and the neccessary floders will be created in the customer's repo
-5. Create the tekton k8s secret ,example is given below
-### Tekton K8s Secrets
-
-a. Git secret 
    
- Use the below secret yaml and replace the username and password with the access token which was added in **add git repo** while onboarding 
+2. Onboarding git project in to capten
+   
+   * select the `add git repo` from the **git** section
+   * add the git repo url,access token and label for the customer repo (label is tekton) and the tekton ci/cd repo (label is IntelopsCi)
+3. Onboarding container registry in to capten
 
-```bash
-apiVersion: v1
-data:
-  password: xxx
-  username: yyy
-kind: Secret
-metadata:
-  name: gitcred-capten-pipeline
-  namespace: tekton-pipelines
-type: Opaque
-```
+   * select `add container registry` from **container registry** section
+   * add  the registry url,username,access token and label to which the built image needs to be pushed (labels is "tekton")
+# Configuring Tekton
+## Configuring Capten Tekton Plugin 
+   Go to the *capten-->platform engineering* ,select on the tekton setup and then select the `sync` option under the  **configure** section and this will configure the tekton and the neccessary floders will be created in the customer's repo
+   
+# Pre-requisite For Tekton CI/CD Pipeline Creation
+
+* Create a namepace eg `tekton-pipelines`
+
+* Create a secretstore from the yaml given below.
+  
+          apiVersion: external-secrets.io/v1beta1
+          kind: ClusterSecretStore
+          metadata:
+            name: vault-root-store
+          spec:
+            provider:
+              vault:
+                server: "http://vault.aws.optimizor.app"
+                path: "secret"
+                version: "v2"
+                auth:
+                  tokenSecretRef:
+                    name: <"secret name of the vault-root-token in tekton namespace">
+                    key: "token"
+                    namespace: external-secrets
+
+* Git secret
+ 
+ Go to *onboarding-->git* under the respective git project you can see the path of the vault where the credentials of git is stored.copy the path and add it to the path in the external secret yaml as given below
+
+ You must properly annotate the external-secret to specify the domains for which Tekton can use the credentials.
+
+ A credential annotation key must begin with tekton.dev/git- or tekton.dev/docker- and its value is the URL of the host for which you want Tekton to use that credential.
+
+    apiVersion: external-secrets.io/v1beta1
+    kind: ExternalSecret
+    metadata:
+      annotations:
+        tekton.dev/git-0: "https://github.com"
+      name: gitcred-external
+      namespace: tekton-pipelines
+    spec:
+      refreshInterval: "10s"
+      secretStoreRef:
+        name: vault-root-store
+        kind: ClusterSecretStore
+      target:
+        name: gitcred-capten-pipeline
+      data:
+      - secretKey: password
+        remoteRef:
+          key: <vault path cpoied from ui>
+          property: accessToken
+      - secretKey: username
+        remoteRef:
+          key: <vault path copied from ui>
+          property: userID
+       
+
 b. Container registry secret
 
    For the container registry secret follow the steps given below
@@ -49,24 +96,38 @@ metadata:
 type: Opaque
 ```
 
-c.Cosign docker login secret
+* Cosign docker login secret
    
-  Use the below secret yaml  and replace the username ,password and registry with the username , access token and registry url  which was added in **add container registry** while onboarding
+  Go to *onboarding-->conatainer registry* under the respective container registry you can see the path of the vault where the credentials of container registry is stored.copy the path and add it to the path in the external secret yaml as given below
 
-```bash
-apiVersion: v1
-data:
-  password: yyy
-  registry: zzz
-  username: xxx
-kind: Secret
-metadata:
-  name: cosign-docker-secret-capten-pipeline
-  namespace: tekton-pipelines
-type: Opaque
-```
+      apiVersion: external-secrets.io/v1beta1
+      kind: ExternalSecret
+      metadata:
+        name: cosign-docker-external
+        namespace: tekton-pipelines
+      spec:
+        refreshInterval: "10s"
+        secretStoreRef:
+          name: vault-root-store
+          kind: ClusterSecretStore
+        target:
+          name: cosign-docker-secret-capten-pipeline
+        data:
+        - secretKey: password
+          remoteRef:
+            key: <vault path copied from ui>
+            property: password
+        - secretKey: registry
+          remoteRef:
+            key: <vault path copied from ui>
+            property: registry
+        - secretKey: username
+          remoteRef:
+            key: <vault path copied from ui>
+            property: username
 
-d.Argocd secret
+
+* Argocd secret
    
   Use the below secret yaml  and replace the username ,password and server url by using the command given below and copy-paste the required credentials in this secret
   
@@ -87,30 +148,40 @@ metadata:
 type: Opaque
 ```
 
-e.Extra-config secret
-  
-  Use the below secret yaml and replace the GIT_TOKEN and GIT_USER_NAME with the username and access token which was added in **add git repo** while onboarding
-  
-  Then replace the CLUSTER_ENDPOINT value by downloading the kubeconfig file of the bussiness cluster present at this location *capten-->platform-engineering-->crossplane-plugin-->configure*
+* Extra-config secret
 
-```bash
-apiVersion: v1
-data:
-  CLUSTER_ENDPOINT: aaa
-  GIT_TOKEN: yyy
-  GIT_USER_NAME: xxx
-kind: Secret
-metadata:
-  name: extraconfig-capten-pipeline
-  namespace: tekton-pipelines
-type: Opaque
-```
- 
+  Go to *onboarding-->git* under the respective git project you can see the path of the vault where the credentials of git is stored.copy the path and add it to the path in the external secret yaml as given below
 
-7. Now commit the required pipeline,rbac,triggers and ingress in the customer repo under the directory *cicd-->tekton-pipelines--->templates*.
-once done the argocd will update this changes to the cluster and the pipeline,trigger ,rbac and ingress will be created in the controlplane cluster
+      apiVersion: external-secrets.io/v1beta1
+      kind: ExternalSecret
+      metadata:
+        name: extraconfig-external
+        namespace: tekton-pipelines
+      spec:
+        refreshInterval: "10s"
+        secretStoreRef:
+          name: vault-root-store
+          kind: ClusterSecretStore
+        target:
+          name: extraconfig-capten-pipeline
+        data:
+        - secretKey: GIT_TOKEN
+          remoteRef:
+            key: <vault path copied from ui>
+            property: accessToken
+        - secretKey: GIT_USER_NAME
+          remoteRef:
+            key: <vault path copied from ui>
+            property: userID
+
+# Prepare Pipeline Resources For The Tekton Pipeline
+
+Now commit the required pipeline,rbac,triggers and ingress in the customer repo under the directory *cicd-->tekton-pipelines-->templates*.
+once done the argocd will update this changes to the cluster and the pipeline,triggers,rbac and ingress will be created in the controlplane cluster
+
+# Triggering Tekton Pipeline
  
-8. Now add the **webhook url** which was given in the ingress yaml to the repo on which the tekton pipeline needs to be executed upon trigger.
+ Now add the **webhook url** to the tekton ci/cd repo on which the tekton pipeline needs to be executed upon trigger.
 once all the setup is done and now when a changes is commited in the tekton ci/cd repo the tekton pipeline will get executed and the image gets built and pushed to the container registry ,finally the built image will get deployed in the bussiness cluster 
 
 

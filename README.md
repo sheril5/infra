@@ -71,30 +71,27 @@
 
 b. Container registry secret
 
-   For the container registry secret follow the steps given below
+   Go to *onboarding-->container registry* under the respective container registry, you can see the path of the vault where the credentials of container registry is stored.copy the path and add it to the path in the external secret yaml as given below
+
+         apiVersion: external-secrets.io/v1beta1
+         kind: ExternalSecret
+         metadata:
+           name: docker-external
+           namespace: tekton-pipelines
+         spec:
+           refreshInterval: "10s"
+           secretStoreRef:
+             name: vault-root-store
+             kind: ClusterSecretStore
+           target:
+             name: docker-credentials-capten-pipeline
+           data:
+           - secretKey: config.json
+             remoteRef:
+               key: <vault path copied from ui>
+               property: config.json
+
    
-   1. First login to the container registry by giving this command in the terminal
-        ```bash
-        kubectl docker login ghcr.io -u <username> -p <password>
-        ```
-        
-   2. Use this command to get the secret
-        ```bash
-        cat ~/.docker/config.json | base64 -w0
-        ```   
-
-   3. Use the below secret yaml and update it with the above secret obtained.
-
-```bash
-apiVersion: v1
-data:
-  config.json: xxyy
-kind: Secret
-metadata:
-  name: docker-credentials-capten-pipeline
-  namespace: tekton-pipelines
-type: Opaque
-```
 
 * Cosign docker login secret
    
@@ -129,7 +126,7 @@ type: Opaque
 
 * Argocd secret
    
-  Use the below secret yaml  and replace the username ,password and server url by using the command given below and copy-paste the required credentials in this secret
+  Use the below secret yaml  and replace the password with the argocd password which can be obtained by using the **kubectl** command  and the server url is obtained from the capten ui under *capten-->platform-engineering* .Copy the repo url from the argocd setup 
   
 ```bash
 kubectl get secret initial-admin-secret -n argo-cd
@@ -138,9 +135,9 @@ kubectl get secret initial-admin-secret -n argo-cd
 ```bash
 apiVersion: v1
 data:
-  PASSWORD: yyy
-  SERVER_URL: xyz
-  USERNAME: xxx
+  PASSWORD: <replace with argocd secret>
+  SERVER_URL: <repo url from ui>
+  USERNAME: admin
 kind: Secret
 metadata:
   name: argocd-capten-pipeline

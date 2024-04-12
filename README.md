@@ -133,7 +133,7 @@
   Use the below secret yaml  and replace the password with the argocd password which can be obtained by using the **kubectl** command  and the server url is obtained from the capten ui under *capten-->platform-engineering* .Copy the repo url from the argocd setup 
   
  ```bash     
-  kubectl get secret initial-admin-secret -n argo-cd
+  kubectl get secrets argocd-initial-admin-secret -n argo-cd
   ```    
       
       apiVersion: v1

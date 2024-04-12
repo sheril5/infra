@@ -69,7 +69,7 @@
           property: userID
        
 
-b. Container registry secret
+* Container registry secret
 
    Go to *onboarding-->container registry* under the respective container registry, you can see the path of the vault where the credentials of container registry is stored.copy the path and add it to the path in the external secret yaml as given below
 
@@ -128,23 +128,25 @@ b. Container registry secret
    
   Use the below secret yaml  and replace the password with the argocd password which can be obtained by using the **kubectl** command  and the server url is obtained from the capten ui under *capten-->platform-engineering* .Copy the repo url from the argocd setup 
   
-```bash
-kubectl get secret initial-admin-secret -n argo-cd
-```
+ ```bash     
+  kubectl get secret initial-admin-secret -n argo-cd
+  ```    
+      
+      apiVersion: v1
+      data:
+        PASSWORD: <replace with argocd secret>
+        SERVER_URL: <repo url from ui>
+        USERNAME: admin
+      kind: Secret
+      metadata:
+        name: argocd-capten-pipeline
+        namespace: tekton-pipelines
+      type: Opaque
 
-```bash
-apiVersion: v1
-data:
-  PASSWORD: <replace with argocd secret>
-  SERVER_URL: <repo url from ui>
-  USERNAME: admin
-kind: Secret
-metadata:
-  name: argocd-capten-pipeline
-  namespace: tekton-pipelines
-type: Opaque
-```
+* cosign-keys
 
+  now the cosign keys secret is automatically created in kyverno namespace.
+  
 * Extra-config secret
 
   Go to *onboarding-->git* under the respective git project you can see the path of the vault where the credentials of git is stored.copy the path and add it to the path in the external secret yaml as given below

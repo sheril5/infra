@@ -18,7 +18,11 @@
 
 * Create a namepace eg `tekton-pipelines`
 
-* Create a secretstore from the yaml given below.
+* Create a secretstore from the yaml given below.Replace the server with the url which can be obtained from the **kubectl** command given below.
+
+  ```bash
+  kubectl get ingress -n capten
+  ```
   
           apiVersion: external-secrets.io/v1beta1
           kind: ClusterSecretStore
@@ -27,7 +31,7 @@
           spec:
             provider:
               vault:
-                server: "http://vault.aws.optimizor.app"
+                server: <"replace with the ingress host obtained from above command">
                 path: "secret"
                 version: "v2"
                 auth:

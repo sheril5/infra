@@ -24,55 +24,55 @@
   kubectl get ingress -n capten
   ```
   
-          apiVersion: external-secrets.io/v1beta1
-          kind: ClusterSecretStore
-          metadata:
-            name: vault-root-store
-          spec:
-            provider:
-              vault:
-                server: <"replace with the ingress host obtained from above command">
-                path: "secret"
-                version: "v2"
-                auth:
-                  tokenSecretRef:
-                    name: <"secret name of the vault-root-token in tekton namespace">
-                    key: "token"
-                    namespace: external-secrets
+       apiVersion: external-secrets.io/v1beta1
+       kind: ClusterSecretStore
+       metadata:
+         name: vault-root-store
+       spec:
+         provider:
+           vault:
+             server: <"replace with the ingress host obtained from above command">
+             path: "secret"
+             version: "v2"
+             auth:
+               tokenSecretRef:
+                 name: <"secret name of the vault-root-token in tekton namespace">
+                 key: "token"
+                 namespace: external-secrets
 
 * Git secret
  
- Go to *onboarding-->git* under the respective git project you can see the path of the vault where the credentials of git is stored.copy the path and add it to the path in the external secret yaml as given below
+  Go to *onboarding-->git* under the respective git project you can see the path of the vault where the credentials of git is stored.copy the path and add it to the path in the external secret yaml as given below
 
- You must properly annotate the external-secret to specify the domains for which Tekton can use the credentials.
+  You must properly annotate the external-secret to specify the domains for which Tekton can use the credentials.
 
- A credential annotation key must begin with tekton.dev/git- or tekton.dev/docker- and its value is the URL of the host for which you want Tekton to use that credential.
-   eg-tekton.dev/git-0: https://gitlab.com , tekton.dev/git-0: https://github.com , tekton.dev/docker-0: https://gcr.io
+  A credential annotation key must begin with tekton.dev/git- or tekton.dev/docker- and its value is the URL of the host for which you want Tekton to use that credential.
+    eg-tekton.dev/git-0: https://gitlab.com , tekton.dev/git-0: https://github.com , tekton.dev/docker-0: https://gcr.io
 
-    apiVersion: external-secrets.io/v1beta1
-    kind: ExternalSecret
-    metadata:
-      annotations:
-        tekton.dev/git-0: "https://github.com"
-      name: gitcred-external
-      namespace: tekton-pipelines
-    spec:
-      refreshInterval: "10s"
-      secretStoreRef:
-        name: vault-root-store
-        kind: ClusterSecretStore
-      target:
-        name: gitcred-capten-pipeline
-      data:
-      - secretKey: password
-        remoteRef:
-          key: <vault path cpoied from ui>
-          property: accessToken
-      - secretKey: username
-        remoteRef:
-          key: <vault path copied from ui>
-          property: userID
-       
+          apiVersion: external-secrets.io/v1beta1
+          kind: ExternalSecret
+          metadata:
+            annotations:
+              tekton.dev/git-0: "https://github.com"
+            name: gitcred-external
+            namespace: tekton-pipelines
+          spec:
+            refreshInterval: "10s"
+            secretStoreRef:
+              name: vault-root-store
+              kind: ClusterSecretStore
+            target:
+              name: gitcred-capten-pipeline
+            data:
+            - secretKey: password
+              remoteRef:
+                key: <vault path cpoied from ui>
+                property: accessToken
+            - secretKey: username
+              remoteRef:
+                key: <vault path copied from ui>
+                property: userID
+             
 
 * Container registry secret
 

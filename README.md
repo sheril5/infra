@@ -178,6 +178,32 @@
             key: <vault path copied from ui>
             property: userID
 
+# extra steps
+
+## For the application pod uses private registry
+
+if the application which is deployed uses a private registry , apply the below external-secrets 
+
+      apiVersion: external-secrets.io/v1beta1
+      kind: ExternalSecret
+      metadata:
+        name: ghcrd-docker
+      spec:
+        refreshInterval: "10s"
+        secretStoreRef:
+          name: vault-root-store
+          kind: ClusterSecretStore
+        target:
+          name: ghcrd-docker
+          template:
+            type: kubernetes.io/dockerconfigjson
+        data:
+        - secretKey: .dockerconfigjson
+          remoteRef:
+            key: secret/generic/container-registry/8b8c0091-a3fa-4441-a7b3-90346e1618a2
+            property: config.json
+
+
 # Prepare Pipeline Resources For The Tekton Pipeline
 
 Now commit the required pipeline,rbac,triggers and ingress in the customer repo under the directory *cicd-->tekton-pipelines-->templates*.

@@ -47,6 +47,7 @@
  You must properly annotate the external-secret to specify the domains for which Tekton can use the credentials.
 
  A credential annotation key must begin with tekton.dev/git- or tekton.dev/docker- and its value is the URL of the host for which you want Tekton to use that credential.
+   eg-tekton.dev/git-0: https://gitlab.com , tekton.dev/git-0: https://github.com , tekton.dev/docker-0: https://gcr.io
 
     apiVersion: external-secrets.io/v1beta1
     kind: ExternalSecret
@@ -130,7 +131,7 @@
 
 * Argocd secret
    
-  Use the below secret yaml  and replace the password with the argocd password which can be obtained by using the **kubectl** command  and the server url is obtained from the capten ui under *capten-->platform-engineering* .Copy the repo url from the argocd setup 
+  Use the below secret yaml  and replace the password with the encoded argocd password which can be obtained by using the **kubectl** command  and the server url is obtained from the capten ui under *capten-->platform-engineering* .Copy the repo url from the argocd setup ,encoded it and add it to the server url.Username is admin ,add the encoded username to the yaml given below
   
  ```bash     
   kubectl get secrets argocd-initial-admin-secret -n argo-cd
@@ -140,7 +141,7 @@
       data:
         PASSWORD: <replace with argocd secret>
         SERVER_URL: <repo url from ui>
-        USERNAME: admin
+        USERNAME: <encoded username>
       kind: Secret
       metadata:
         name: argocd-capten-pipeline

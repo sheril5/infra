@@ -191,7 +191,37 @@ once done the argocd will update this changes to the cluster and the pipeline,tr
  Now add the **webhook url** to the tekton ci/cd repo on which the tekton pipeline needs to be executed upon trigger.
 once all the setup is done and now when a changes is commited in the tekton ci/cd repo the tekton pipeline will get executed and the image gets built and pushed to the container registry ,finally the built image will get deployed in the bussiness cluster.Sample tekton related yamls will be present under *cicd-->tekton-samples*
 
+# Note
 
+If required one can use the **keybased-signing** kyverno policy to validate the image of the application  while deploying . Use the  kyverno policy given below and replace with the image eg. *registry.gitlab.com/sheril5/book-store-backened*. 
+
+
+      apiVersion: kyverno.io/v1
+      kind: Policy
+      metadata:
+        name: check-image
+      spec:
+        validationFailureAction: Audit
+        background: false
+        webhookTimeoutSeconds: 30
+        failurePolicy: Fail
+        rules:
+          - name: check-image
+            match:
+              any:
+                - resources:
+                    kinds:
+                      - Pod
+            verifyImages:
+              - imageReferences:
+                  - "image*"
+                attestors:
+                  - count: 1
+                    entries:
+                      - keys:
+                          publicKeys: "k8s://kyverno/cosign.pub"
+                mutateDigest: false
+                verifyDigest: false
 
 
 

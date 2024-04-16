@@ -18,7 +18,7 @@
 
 * Use the already created **tekton-pipelines** namespace for the creation of pipeline.
 
-* Create a secretstore from the yaml given below.Replace the server with the url which can be obtained from the **kubectl** command given below.
+* Create a Clustersecretstore from the yaml given below.Replace the server with the url which can be obtained from the **kubectl** command given below.
 
   ```bash
   kubectl get ingress -n capten
@@ -36,9 +36,11 @@
              version: "v2"
              auth:
                tokenSecretRef:
-                 name: <"secret name of the vault-root-token in tekton namespace">
+                 name: "tekton-vault-token"
                  key: "token"
-                 namespace: external-secrets
+                 namespace: tekton
+
+  Here, the **tekton-vault-token** is the secret created in tekton namespace to access the vault
 
 * Git secret
  
@@ -150,7 +152,7 @@
 
 * cosign-keys
 
-  now the cosign keys secret is automatically created in tekton-pipelines namespace.
+  Now the cosign keys secret is automatically created in tekton-pipelines namespace.
   
 * Extra-config secret
 

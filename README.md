@@ -150,7 +150,7 @@
 
 * cosign-keys
 
-  now the cosign keys secret is automatically created in kyverno namespace.
+  now the cosign keys secret is automatically created in tekton-pipelines namespace.
   
 * Extra-config secret
 
@@ -178,31 +178,6 @@
             key: <vault path copied from ui>
             property: userID
 
-# extra steps
-
-## For the application pod uses private registry
-
-if the application which is deployed uses a private registry , apply the below external-secrets 
-
-      apiVersion: external-secrets.io/v1beta1
-      kind: ExternalSecret
-      metadata:
-        name: ghcrd-docker
-      spec:
-        refreshInterval: "10s"
-        secretStoreRef:
-          name: vault-root-store
-          kind: ClusterSecretStore
-        target:
-          name: ghcrd-docker
-          template:
-            type: kubernetes.io/dockerconfigjson
-        data:
-        - secretKey: .dockerconfigjson
-          remoteRef:
-            key: secret/generic/container-registry/8b8c0091-a3fa-4441-a7b3-90346e1618a2
-            property: config.json
-
 
 # Prepare Pipeline Resources For The Tekton Pipeline
 
@@ -212,7 +187,7 @@ once done the argocd will update this changes to the cluster and the pipeline,tr
 # Triggering Tekton Pipeline
  
  Now add the **webhook url** to the tekton ci/cd repo on which the tekton pipeline needs to be executed upon trigger.
-once all the setup is done and now when a changes is commited in the tekton ci/cd repo the tekton pipeline will get executed and the image gets built and pushed to the container registry ,finally the built image will get deployed in the bussiness cluster 
+once all the setup is done and now when a changes is commited in the tekton ci/cd repo the tekton pipeline will get executed and the image gets built and pushed to the container registry ,finally the built image will get deployed in the bussiness cluster.Sample tekton related yamls will be present under *cicd-->tekton-samples*
 
 
 

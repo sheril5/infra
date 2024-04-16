@@ -16,7 +16,7 @@
    
 # Pre-requisite For Tekton CI/CD Pipeline Creation
 
-* Create a namepace eg `tekton-pipelines`
+* Use the already created **tekton-pipelines** namespace for the creation of pipeline.
 
 * Create a secretstore from the yaml given below.Replace the server with the url which can be obtained from the **kubectl** command given below.
 

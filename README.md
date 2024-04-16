@@ -25,7 +25,7 @@
   ```
   
        apiVersion: external-secrets.io/v1beta1
-       kind: ClusterSecretStore
+       kind: SecretStore
        metadata:
          name: vault-root-store
        spec:
@@ -62,7 +62,7 @@
             refreshInterval: "10s"
             secretStoreRef:
               name: vault-root-store
-              kind: ClusterSecretStore
+              kind: SecretStore
             target:
               name: gitcred-capten-pipeline
             data:
@@ -89,7 +89,7 @@
            refreshInterval: "10s"
            secretStoreRef:
              name: vault-root-store
-             kind: ClusterSecretStore
+             kind: SecretStore
            target:
              name: docker-credentials-capten-pipeline
            data:
@@ -113,7 +113,7 @@
         refreshInterval: "10s"
         secretStoreRef:
           name: vault-root-store
-          kind: ClusterSecretStore
+          kind: SecretStore
         target:
           name: cosign-docker-secret-capten-pipeline
         data:
@@ -141,8 +141,8 @@
       
       apiVersion: v1
       data:
-        PASSWORD: <replace with argocd secret>
-        SERVER_URL: <repo url from ui>
+        PASSWORD: <replace with encoded argocd secret>
+        SERVER_URL: <repo url copied from ui>
         USERNAME: <encoded username>
       kind: Secret
       metadata:
@@ -167,7 +167,7 @@
         refreshInterval: "10s"
         secretStoreRef:
           name: vault-root-store
-          kind: ClusterSecretStore
+          kind: SecretStore
         target:
           name: extraconfig-capten-pipeline
         data:

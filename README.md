@@ -1,6 +1,6 @@
 # Tekton Flow For Capten
 ## Tekton CI/CD Pipeline
-1. Login to the capten ui page by clicking on this link https://alpha.intelops.app/login
+1. Login to the capten ui page
    
 2. Onboarding git project in to capten
    
@@ -12,7 +12,7 @@
    * add  the registry url,username,access token and label to which the built image needs to be pushed (labels is "tekton")
 # Configuring Tekton
 ## Configuring Capten Tekton Plugin 
-   Go to the *capten-->platform engineering* ,select on the tekton setup and then select the `sync` option under the  **configure** section and this will configure the tekton and the neccessary floders will be created in the customer's repo
+   Go to the *capten-->platform engineering* ,select on the tekton plugin setup and then select the `sync` option under the  **configure** section and this will configure the tekton and the neccessary floders will be created in the customer's repo
    
 # Pre-requisite For Tekton CI/CD Pipeline Creation
 
@@ -219,7 +219,7 @@ If required one can use the **keybased-signing** kyverno policy to validate the 
                   - count: 1
                     entries:
                       - keys:
-                          publicKeys: "k8s://kyverno/cosign.pub"
+                          publicKeys: "k8s://kyverno/cosign-pub"
                 mutateDigest: false
                 verifyDigest: false
 

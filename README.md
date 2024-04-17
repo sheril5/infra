@@ -27,7 +27,7 @@
   ```
   
        apiVersion: external-secrets.io/v1beta1
-       kind: SecretStore
+       kind: ClusterSecretStore
        metadata:
          name: vault-root-store
        spec:
@@ -64,7 +64,7 @@
             refreshInterval: "10s"
             secretStoreRef:
               name: vault-root-store
-              kind: SecretStore
+              kind: ClusterSecretStore
             target:
               name: gitcred-capten-pipeline
             data:
@@ -91,7 +91,7 @@
            refreshInterval: "10s"
            secretStoreRef:
              name: vault-root-store
-             kind: SecretStore
+             kind: ClusterSecretStore
            target:
              name: docker-credentials-capten-pipeline
            data:
@@ -115,7 +115,7 @@
         refreshInterval: "10s"
         secretStoreRef:
           name: vault-root-store
-          kind: SecretStore
+          kind: ClusterSecretStore
         target:
           name: cosign-docker-secret-capten-pipeline
         data:
@@ -169,7 +169,7 @@
         refreshInterval: "10s"
         secretStoreRef:
           name: vault-root-store
-          kind: SecretStore
+          kind: ClusterSecretStore
         target:
           name: extraconfig-capten-pipeline
         data:

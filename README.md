@@ -3,10 +3,12 @@
 1. Login to the capten ui page
    
 2. Onboarding git project in to capten
+
+   ![CAPTEN](.readme_assets/captenlogo.png)
    
    * select the `add git repo` from the **git** section
    * add the git repo url,access token and label for the customer repo (label is tekton) and the tekton ci/cd repo (label is IntelopsCi)
-3. Onboarding container registry in to capten
+4. Onboarding container registry in to capten
 
    * select `add container registry` from **container registry** section
    * add  the registry url,username,access token and label to which the built image needs to be pushed (labels is "tekton")

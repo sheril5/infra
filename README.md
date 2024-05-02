@@ -20,14 +20,14 @@
 
 * Use the already created **tekton-pipelines** namespace for the creation of pipeline.
 
-* Create a Clustersecretstore from the yaml given below.Replace the server with the url which can be obtained from the **kubectl** command given below.
+* Create a secretstore from the yaml given below.Replace the server with the url which can be obtained from the **kubectl** command given below.
 
   ```bash
   kubectl get ingress -n capten
   ```
   
        apiVersion: external-secrets.io/v1beta1
-       kind: ClusterSecretStore
+       kind: SecretStore
        metadata:
          name: vault-root-store
        spec:
@@ -42,11 +42,13 @@
                  key: "token"
                  namespace: tekton
 
-  Here, the **tekton-vault-token** is the secret created in tekton namespace to access the vault
+  Here, the **tekton-vault-token** is the secret created in tekton namespace to access the vault.Copy-paste the **tekton-vault-token** secret in the required namespace where the tekton pipeline will be present and then create the above secretstore.
 
 * Git secret
  
   Go to *onboarding-->git* under the respective git project you can see the path of the vault where the credentials of git is stored.copy the path and add it to the path in the external secret yaml as given below
+
+  ## Note
 
   You must properly annotate the external-secret to specify the domains for which Tekton can use the credentials.
 
@@ -64,7 +66,7 @@
             refreshInterval: "10s"
             secretStoreRef:
               name: vault-root-store
-              kind: ClusterSecretStore
+              kind: SecretStore
             target:
               name: gitcred-capten-pipeline
             data:
@@ -85,13 +87,15 @@
          apiVersion: external-secrets.io/v1beta1
          kind: ExternalSecret
          metadata:
+           annotations:
+             tekton.dev/git-0: "https://github.com"
            name: docker-external
            namespace: tekton-pipelines
          spec:
            refreshInterval: "10s"
            secretStoreRef:
              name: vault-root-store
-             kind: ClusterSecretStore
+             kind: SecretStore
            target:
              name: docker-credentials-capten-pipeline
            data:
@@ -109,13 +113,15 @@
       apiVersion: external-secrets.io/v1beta1
       kind: ExternalSecret
       metadata:
+        annotations:
+          tekton.dev/git-0: "https://github.com"
         name: cosign-docker-external
         namespace: tekton-pipelines
       spec:
         refreshInterval: "10s"
         secretStoreRef:
           name: vault-root-store
-          kind: ClusterSecretStore
+          kind: SecretStore
         target:
           name: cosign-docker-secret-capten-pipeline
         data:
@@ -163,13 +169,15 @@
       apiVersion: external-secrets.io/v1beta1
       kind: ExternalSecret
       metadata:
+        annotations:
+          tekton.dev/git-0: "https://github.com"
         name: extraconfig-external
         namespace: tekton-pipelines
       spec:
         refreshInterval: "10s"
         secretStoreRef:
           name: vault-root-store
-          kind: ClusterSecretStore
+          kind: SecretStore
         target:
           name: extraconfig-capten-pipeline
         data:
@@ -191,39 +199,4 @@ once done the argocd will update this changes to the cluster and the pipeline,tr
 # Triggering Tekton Pipeline
  
  Now add the **webhook url** to the tekton ci/cd repo on which the tekton pipeline needs to be executed upon trigger.
-once all the setup is done and now when a changes is commited in the tekton ci/cd repo the tekton pipeline will get executed and the image gets built and pushed to the container registry ,finally the built image will get deployed in the bussiness cluster.Sample tekton related yamls will be present under *cicd-->tekton-samples*
-
-# Note
-
-If required one can use the **keybased-signing** kyverno policy to validate the image of the application  while deploying . Use the  kyverno policy given below and replace with the image eg. *registry.gitlab.com/sheril5/book-store-backened*. 
-
-
-      apiVersion: kyverno.io/v1
-      kind: Policy
-      metadata:
-        name: check-image
-      spec:
-        validationFailureAction: Audit
-        background: false
-        webhookTimeoutSeconds: 30
-        failurePolicy: Fail
-        rules:
-          - name: check-image
-            match:
-              any:
-                - resources:
-                    kinds:
-                      - Pod
-            verifyImages:
-              - imageReferences:
-                  - "image*"
-                attestors:
-                  - count: 1
-                    entries:
-                      - keys:
-                          publicKeys: "k8s://kyverno/cosign-pub"
-                mutateDigest: false
-                verifyDigest: false
-
-
-
+once all the setup is done and now when a changes is commited in the tekton ci/cd repo the tekton pipeline will get executed and the image gets built and pushed to the container registry ,finally the built image will get deployed in the bussiness cluster.

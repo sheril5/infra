@@ -40,7 +40,7 @@
                tokenSecretRef:
                  name: "tekton-vault-token"
                  key: "token"
-                 namespace: tekton
+                 
 
   Here, the **tekton-vault-token** is the secret created in tekton namespace to access the vault.Copy-paste the **tekton-vault-token** secret in the required namespace where the tekton pipeline will be present and then create the above secretstore.
 

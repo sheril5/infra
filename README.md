@@ -198,5 +198,5 @@ once done the argocd will update this changes to the cluster and the pipeline,tr
 
 # Triggering Tekton Pipeline
  
- Now add the **webhook url** to the tekton ci/cd repo on which the tekton pipeline needs to be executed upon trigger.
+ Now add the **webhook url** to the tekton ci/cd repo on which the tekton pipeline needs to be executed upon trigger.Also create a new floder **qt_test** in the root directory and place the qt test.yaml file which contains the testcases to test the deployed application inside the floder so that the tekton pipeline can run the testcases when the qt task is trggered in the pipeline  
 once all the setup is done and now when a changes is commited in the tekton ci/cd repo the tekton pipeline will get executed and the image gets built and pushed to the container registry ,the built image is then signed using cosign and finally once the application is deployed in the bussiness cluster the qt task in the pipeline will run the testcase to test the application.

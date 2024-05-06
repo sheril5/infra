@@ -237,7 +237,7 @@
    
   5. Then add the url of the application in the test.yaml file
    
-  6. After the execution of the pipeline we can check the qt task success and failure in the tekton-dashboard
+  6. After the execution of the pipeline we can check the qt task success and failure in the tekton-dashboard 
    
   7. when the tekton pipeline fails due to quality-trace test case, it may be due to which assertions in the test yaml getting failed or configuration error between the test app and quality-trace. We can check the quality-trace server pod logs and quality-trace otel collector logs for errors and trace ids.
   
@@ -256,4 +256,4 @@
 
   6. Also the success and failure status will be notified back to the git repo in the case of pull_request event.Note for this the branch protection rule needs to be added
      
-  7. The tekton related pipelines and tasks can be viewed in the **tekton-dashboard** by clicking on the details option where the check is running
+  7. The tekton related pipelines and tasks can be viewed in the **tekton-dashboard** by clicking on the details option where the check is running or by clicking on the tekton icon present under *Capten-->Controlplane Cluster* in the ui

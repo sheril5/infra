@@ -252,7 +252,7 @@
      
   4. Then in the search box that appers under Require branches to be up to date before merging ,search for tekton-pipelines and add it,now whenever a pull_request is raised the check will run and once the checks is success the **merge** option will be visible
  
-  5. once all the setup is done and now when a changes is commited in the tekton ci/cd repo the tekton pipeline will get executed and the image gets built and pushed to the container registry ,the built image is then signed using cosign and finally once the application is deployed in the bussiness cluster the qt task in the pipeline will run the testcase to test the application and the success/failure task will get executed depending upon the result of pipeline.
+  5. once all the setup is done and now when a pull_request event is triggered (when a pull_request is raised), the tekton pipeline will get executed and the image gets built and pushed to the container registry ,the built image is then signed using cosign and finally once the application is deployed in the bussiness cluster the qt task in the pipeline will run the testcase to test the application and the success/failure task will get executed depending upon the result of pipeline.similarly the pipeline can trigger for event such as push,tag and release
 
   6. Also the success and failure status will be notified back to the git repo in the case of pull_request event.Note for this the branch protection rule needs to be added
      
